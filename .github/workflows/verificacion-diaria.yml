@@ -23,4 +23,5 @@ jobs:
       - name: Ejecutar script de verificación
         env:
           FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+          GMAIL_PASS: ${{ secrets.GMAIL_PASS }}
         run: node verificar_pagos.js

@@ -1,6 +1,7 @@
 const admin = require("firebase-admin");
+const nodemailer = require("nodemailer");
 
-// Leemos el JSON completo directamente desde el secreto de GitHub
+// Inicializar Firebase con el JSON único
 const serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT);
 
 admin.initializeApp({
@@ -9,38 +10,49 @@ admin.initializeApp({
 
 const db = admin.firestore();
 
-async function revisarPagos() {
-  const hoy = new Date();
-  console.log("Iniciando revisión de pagos con Firebase conectado correctamente...");
-  // ... resto de tu código
-}
+// Configurar el transportador de correos usando tu cuenta y el secreto de GitHub
+const transporter = nodemailer.createTransport({
+  service: "gmail",
+  auth: {
+    user: "tucorreo@gmail.com", // <--- Coloca aquí tu correo personal de Gmail
+    pass: process.env.GMAIL_PASS // <--- Toma la contraseña de aplicación de los secretos
+  }
+});
 
-revisarPagos();
-
-async function revisarPagos() {
-    const hoy = new Date();
-    try {
-        const snapshot = await db.collection("atletas").get();
-        
-        snapshot.forEach(doc => {
-            const atleta = doc.data();
-            if (!atleta.fechaInscripcion || !atleta.correo) return;
-
-            const inscripcion = new Date(atleta.fechaInscripcion);
-            const vencimiento = new Date(inscripcion);
-            vencimiento.setDate(vencimiento.getDate() + 30);
-
-            if (hoy >= vencimiento) {
-                console.log(`⚠️ Alerta de pago: El atleta ${atleta.nombre} (${atleta.correo}) tiene su pago vencido.`);
-                // Aquí conectaremos el envío de correo (ej. Nodemailer) más adelante.
-            }
-        });
-
-        console.log("Revisión diaria completada con éxito en la nube de GitHub.");
-    } catch (error) {
-        console.error("Error al revisar los pagos:", error);
-        process.exit(1);
+async function verificarPagosYNotificar() {
+  try {
+    console.log("Iniciando revisión de pagos en Firestore...");
+    
+    // Consultamos los estudiantes en Firestore
+    const snapshot = await db.collection("estudiantes").get();
+    
+    if (snapshot.empty) {
+      console.log("No hay estudiantes registrados.");
+      return;
     }
+
+    // Recorremos cada estudiante para revisar y enviar el correo de recordatorio de forma dinámica
+    for (const doc of snapshot.docs) {
+      const estudiante = doc.data();
+      
+      // Verificamos que el estudiante tenga un correo registrado
+      if (estudiante.email) {
+        let mailOptions = {
+          from: "tucorreo@gmail.com",
+          to: estudiante.email, // <--- ¡Correo dinámico extraído directo de Firestore!
+          subject: "🔔 Recordatorio de Pago - Sistema Estudiantes",
+          text: `Hola ${estudiante.nombre || "Estudiante"}, te escribimos para recordarte el estado de tu pago en la plataforma.`
+        };
+
+        let info = await transporter.sendMail(mailOptions);
+        console.log(`Correo enviado a ${estudiante.email}: ${info.response}`);
+      }
+    }
+
+    console.log("Proceso de verificación y correos finalizado con éxito.");
+  } catch (error) {
+    console.error("Error en el proceso de verificación de pagos:", error);
+  }
 }
 
-revisarPagos();
+verificarPagosYNotificar();
