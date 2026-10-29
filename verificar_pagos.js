@@ -1,13 +1,19 @@
 const admin = require("firebase-admin");
 
-// Inicializamos Firebase usando las credenciales del entorno de GitHub
+// Limpiamos la clave privada para asegurarnos de que los saltos de línea funcionen bien
+let privateKey = process.env.FIREBASE_PRIVATE_KEY;
+if (privateKey) {
+  privateKey = privateKey.replace(/\\n/g, '\n');
+}
+
 admin.initializeApp({
   credential: admin.credential.cert({
     projectId: process.env.FIREBASE_PROJECT_ID,
     clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
-    privateKey: process.env.FIREBASE_PRIVATE_KEY ? process.env.FIREBASE_PRIVATE_KEY.replace(/\\n/g, '\n') : undefined,
+    privateKey: privateKey
   })
 });
+
 
 const db = admin.firestore();
 
