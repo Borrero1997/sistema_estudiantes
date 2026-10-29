@@ -24,7 +24,7 @@ async function verificarPagosYNotificar() {
     console.log("Iniciando revisión de pagos en Firestore...");
     
     // Consultamos los estudiantes en Firestore
-    const snapshot = await db.collection("escuelaatleta").get();
+    const snapshot = await db.collection("atletas").get();
     
     if (snapshot.empty) {
       console.log("No hay estudiantes registrados.");
