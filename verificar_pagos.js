@@ -14,7 +14,7 @@ const db = admin.firestore();
 const transporter = nodemailer.createTransport({
   service: "gmail",
   auth: {
-    user: "tucorreo@gmail.com", // <--- Coloca aquí tu correo personal de Gmail
+    user: "rosmarlyb@gmail.com", // <--- Coloca aquí tu correo personal de Gmail
     pass: process.env.GMAIL_PASS // <--- Toma la contraseña de aplicación de los secretos
   }
 });
@@ -38,7 +38,7 @@ async function verificarPagosYNotificar() {
       // Verificamos que el estudiante tenga un correo registrado
       if (estudiante.email) {
         let mailOptions = {
-          from: "tucorreo@gmail.com",
+          from: '"Sistema de Estudiante" <rosmarlyb@gmail.com>',
           to: estudiante.email, // <--- ¡Correo dinámico extraído directo de Firestore!
           subject: "🔔 Recordatorio de Pago - Sistema Estudiantes",
           text: `Hola ${estudiante.nombre || "Estudiante"}, te escribimos para recordarte el estado de tu pago en la plataforma.`
