@@ -1,25 +1,14 @@
 const admin = require("firebase-admin");
 
-console.log("--- DIAGNÓSTICO DE SECRETOS ---");
-console.log("PROJECT_ID:", process.env.FIREBASE_PROJECT_ID ? "OK (Existe)" : "FALTA / VACÍO");
-console.log("CLIENT_EMAIL:", process.env.FIREBASE_CLIENT_EMAIL ? "OK (Existe)" : "FALTA / VACÍO");
-console.log("PRIVATE_KEY existe?:", process.env.FIREBASE_PRIVATE_KEY ? "SÍ" : "NO");
-if (process.env.FIREBASE_PRIVATE_KEY) {
-  console.log("Longitud de PRIVATE_KEY:", process.env.FIREBASE_PRIVATE_KEY.length);
-  console.log("Inicio de la clave:", process.env.FIREBASE_PRIVATE_KEY.substring(0, 30));
-}
-console.log("-------------------------------");
-
-let privateKey = process.env.FIREBASE_PRIVATE_KEY;
-if (privateKey) {
-  privateKey = privateKey.replace(/\\n/g, '\n');
-}
+// Reemplazo directo y seguro para los saltos de línea de la llave privada
+let rawKey = process.env.FIREBASE_PRIVATE_KEY || "";
+let formattedKey = rawKey.split(String.raw`\n`).join('\n');
 
 admin.initializeApp({
   credential: admin.credential.cert({
     projectId: process.env.FIREBASE_PROJECT_ID,
     clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
-    privateKey: privateKey
+    privateKey: formattedKey
   })
 });
 
