@@ -1,14 +1,19 @@
 const admin = require("firebase-admin");
 
-// Reemplazo directo y seguro para los saltos de línea de la llave privada
-let rawKey = process.env.FIREBASE_PRIVATE_KEY || "";
-let formattedKey = rawKey.split(String.raw`\n`).join('\n');
+// Limpieza robusta de la llave privada para GitHub Actions
+let privateKey = process.env.FIREBASE_PRIVATE_KEY || "";
+if (privateKey) {
+  // Reemplaza tanto literales "\n" como saltos reales y limpia comillas extras si las hubiera
+  privateKey = privateKey.replace(/\\n/g, '\n').replace(/^["'](.+)["']$/, '$1');
+}
+
+console.log("Iniciando conexión para el proyecto:", process.env.FIREBASE_PROJECT_ID);
 
 admin.initializeApp({
   credential: admin.credential.cert({
     projectId: process.env.FIREBASE_PROJECT_ID,
     clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
-    privateKey: formattedKey
+    privateKey: privateKey
   })
 });
 
