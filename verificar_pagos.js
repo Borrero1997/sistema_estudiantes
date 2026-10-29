@@ -1,6 +1,15 @@
 const admin = require("firebase-admin");
 
-// Limpiamos la clave privada para asegurarnos de que los saltos de línea funcionen bien
+console.log("--- DIAGNÓSTICO DE SECRETOS ---");
+console.log("PROJECT_ID:", process.env.FIREBASE_PROJECT_ID ? "OK (Existe)" : "FALTA / VACÍO");
+console.log("CLIENT_EMAIL:", process.env.FIREBASE_CLIENT_EMAIL ? "OK (Existe)" : "FALTA / VACÍO");
+console.log("PRIVATE_KEY existe?:", process.env.FIREBASE_PRIVATE_KEY ? "SÍ" : "NO");
+if (process.env.FIREBASE_PRIVATE_KEY) {
+  console.log("Longitud de PRIVATE_KEY:", process.env.FIREBASE_PRIVATE_KEY.length);
+  console.log("Inicio de la clave:", process.env.FIREBASE_PRIVATE_KEY.substring(0, 30));
+}
+console.log("-------------------------------");
+
 let privateKey = process.env.FIREBASE_PRIVATE_KEY;
 if (privateKey) {
   privateKey = privateKey.replace(/\\n/g, '\n');
@@ -13,7 +22,6 @@ admin.initializeApp({
     privateKey: privateKey
   })
 });
-
 
 const db = admin.firestore();
 
