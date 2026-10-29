@@ -1,16 +1,21 @@
 const admin = require("firebase-admin");
 
-// Si tienes las variables de entorno o un archivo de credenciales:
+// Leemos el JSON completo directamente desde el secreto de GitHub
+const serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT);
+
 admin.initializeApp({
-  credential: admin.credential.cert({
-    projectId: process.env.FIREBASE_PROJECT_ID,
-    clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
-    // Forzamos un reemplazo total y limpio de cualquier salto de línea literal o real
-    privateKey: process.env.FIREBASE_PRIVATE_KEY ? process.env.FIREBASE_PRIVATE_KEY.replace(/\\n/g, '\n') : undefined
-  })
+  credential: admin.credential.cert(serviceAccount)
 });
 
 const db = admin.firestore();
+
+async function revisarPagos() {
+  const hoy = new Date();
+  console.log("Iniciando revisión de pagos con Firebase conectado correctamente...");
+  // ... resto de tu código
+}
+
+revisarPagos();
 
 async function revisarPagos() {
     const hoy = new Date();
