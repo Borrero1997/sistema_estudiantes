@@ -37,12 +37,12 @@ async function verificarPagosYNotificar() {
       console.log("📄 Datos del registro encontrado:", estudiante);
       
       // Verificamos que tenga la propiedad email
-      if (estudiante.email) {
+      if (estudiante.correo) {
         console.log(`📧 Intentando enviar correo a: ${estudiante.email}...`);
 
         let mailOptions = {
           from: '"Sistema de Estudiantes" <rosmarlyb@gmail.com>',
-          to: estudiante.email,
+          to: estudiante.correo,
           subject: "🔔 Recordatorio de Pago - Sistema Estudiantes",
           text: `Hola ${estudiante.nombre || "Estudiante"}, te escribimos para recordarte el estado de tu pago en la plataforma.`
         };
